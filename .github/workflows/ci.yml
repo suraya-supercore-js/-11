@@ -28,3 +28,17 @@ jobs:
       - run: pnpm run typecheck
       - run: pnpm run build
       - run: pnpm test
+
+      - name: Build VPS deployment image
+        run: docker build -t suraya-render-webhook:ci .
+      - name: Validate VPS Compose configuration
+        env:
+          RENDER_WEBHOOK_SECRET: ci-only-webhook-secret
+          RENDER_API_KEY: ci-only-render-token
+          RENDER_SOURCE_SERVICE_ID: srv-source123
+          RENDER_TARGET_SERVICE_ID: srv-target456
+          GITHUB_API_TOKEN: ci-only-github-token
+          GITHUB_OWNER_NAME: example-owner
+          GITHUB_REPO_NAME: example-repo
+          GITHUB_WORKFLOW_ID: deploy.yml
+        run: docker compose config --quiet

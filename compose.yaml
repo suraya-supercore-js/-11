@@ -1,0 +1,38 @@
+services:
+  render-webhook:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: "3001"
+      RENDER_WEBHOOK_SECRET: ${RENDER_WEBHOOK_SECRET:?Set RENDER_WEBHOOK_SECRET}
+      RENDER_API_KEY: ${RENDER_API_KEY:?Set least-privilege RENDER_API_KEY}
+      RENDER_API_URL: ${RENDER_API_URL:-https://api.render.com/v1}
+      RENDER_SOURCE_SERVICE_ID: ${RENDER_SOURCE_SERVICE_ID:?Set watched source service ID}
+      RENDER_TARGET_SERVICE_ID: ${RENDER_TARGET_SERVICE_ID:?Set different target service ID}
+      GITHUB_API_TOKEN: ${GITHUB_API_TOKEN:?Set fine-grained GitHub token with Actions write}
+      GITHUB_OWNER_NAME: ${GITHUB_OWNER_NAME:?Set GitHub owner}
+      GITHUB_REPO_NAME: ${GITHUB_REPO_NAME:?Set GitHub repository}
+      GITHUB_WORKFLOW_ID: ${GITHUB_WORKFLOW_ID:?Set dispatch workflow filename or ID}
+      GITHUB_WORKFLOW_REF: ${GITHUB_WORKFLOW_REF:-main}
+    ports:
+      - "127.0.0.1:${APP_PORT:-3001}:3001"
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3001/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s

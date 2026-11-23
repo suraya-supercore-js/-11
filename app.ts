@@ -15,14 +15,17 @@ const renderAPIToken = process.env.RENDER_API_KEY || "";
 const githubAPIToken = process.env.GITHUB_API_TOKEN || "";
 const githubOwnerName = process.env.GITHUB_OWNER_NAME || "";
 const githubRepoName = process.env.GITHUB_REPO_NAME || "";
-const githubWorkflowID = process.env.GITHUB_WORKFLOW_ID || "example.yaml";
+const githubWorkflowID = process.env.GITHUB_WORKFLOW_ID || "";
 const githubWorkflowRef = process.env.GITHUB_WORKFLOW_REF || "main";
 const sourceServiceId = process.env.RENDER_SOURCE_SERVICE_ID || "";
 const targetServiceId = process.env.RENDER_TARGET_SERVICE_ID || "";
 
 if (!renderWebhookSecret || !renderAPIToken || !githubAPIToken ||
-    !githubOwnerName || !githubRepoName || !sourceServiceId || !targetServiceId) {
+    !githubOwnerName || !githubRepoName || !githubWorkflowID || !sourceServiceId || !targetServiceId) {
   throw new Error("Missing required webhook, Render, GitHub, source-service, or target-service configuration.");
+}
+if (!/^[A-Za-z0-9_.-]+$/.test(githubOwnerName) || !/^[A-Za-z0-9_.-]+$/.test(githubRepoName) || !/^(?:[A-Za-z0-9_.-]+|[0-9]+)$/.test(githubWorkflowID)) {
+  throw new Error("Invalid GitHub owner, repository, or workflow identifier.");
 }
 if (!/^srv-[a-z0-9]+$/.test(sourceServiceId) ||
     !/^srv-[a-z0-9]+$/.test(targetServiceId) ||
