@@ -7,6 +7,8 @@ const root = path.join(__dirname, "..");
 const app = fs.readFileSync(path.join(root, "app.ts"), "utf8");
 const workflow = fs.readFileSync(path.join(root, ".github/workflows/example.yaml"), "utf8");
 const render = fs.readFileSync(path.join(root, "render.yaml"), "utf8");
+const compose = fs.readFileSync(path.join(root, "compose.yaml"), "utf8");
+const dockerfile = fs.readFileSync(path.join(root, "Dockerfile"), "utf8");
 
 test("webhook requires distinct explicit source and target services", () => {
   assert.match(app, /RENDER_SOURCE_SERVICE_ID/);
@@ -35,4 +37,12 @@ test("workflow validates service ID and passes it through an environment variabl
 test("Render blueprint requires source and target service IDs as manual secrets/configuration", () => {
   assert.match(render, /key: RENDER_SOURCE_SERVICE_ID\s+sync: false/);
   assert.match(render, /key: RENDER_TARGET_SERVICE_ID\s+sync: false/);
+});
+
+test("workflow ID is explicit and VPS deployment is isolated", () => {
+  assert.match(app, /GITHUB_WORKFLOW_ID = process\.env\.GITHUB_WORKFLOW_ID \|\| ""/);
+  assert.match(compose, /127\.0\.0\.1/);
+  assert.match(compose, /RENDER_SOURCE_SERVICE_ID:\s*\$\{RENDER_SOURCE_SERVICE_ID/);
+  assert.match(compose, /RENDER_TARGET_SERVICE_ID:\s*\$\{RENDER_TARGET_SERVICE_ID/);
+  assert.match(dockerfile, /USER node/);
 });
