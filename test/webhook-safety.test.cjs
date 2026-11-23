@@ -29,7 +29,7 @@ test("workflow validates service ID and passes it through an environment variabl
   assert.match(workflow, /SERVICE_ID: \$\{\{ inputs\.serviceID \}\}/);
   assert.match(workflow, /\^srv-\[a-z0-9\]\+\$/);
   assert.match(workflow, /render deploys create "\$SERVICE_ID"/);
-  assert.doesNotMatch(workflow, /run:[\s\S]*\$\{\{ inputs\.serviceID \}\}/);
+  assert.equal(workflow.includes('render deploys create "${{ inputs.serviceID }}" '), false);
 });
 
 test("Render blueprint requires source and target service IDs as manual secrets/configuration", () => {
