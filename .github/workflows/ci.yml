@@ -4,10 +4,14 @@ on:
   push:
     branches:
       - main
-      - "feat/**"
   pull_request:
     branches:
       - main
+
+# One CI run per PR branch; cancel superseded runs while edits are arriving.
+concurrency:
+  group: webhook-receiver-ci-${{ github.event.pull_request.head.ref || github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
