@@ -24,7 +24,10 @@ if (!renderWebhookSecret || !renderAPIToken || !githubAPIToken ||
     !githubOwnerName || !githubRepoName || !githubWorkflowID || !sourceServiceId || !targetServiceId) {
   throw new Error("Missing required webhook, Render, GitHub, source-service, or target-service configuration.");
 }
-if (!/^[A-Za-z0-9_.-]+$/.test(githubOwnerName) || !/^[A-Za-z0-9_.-]+$/.test(githubRepoName) || !/^(?:[A-Za-z0-9_.-]+|[0-9]+)$/.test(githubWorkflowID)) {\n  throw new Error("Invalid GitHub owner, repository, or workflow identifier.");\n}\nif (!/^srv-[a-z0-9]+$/.test(sourceServiceId) ||
+if (!/^[A-Za-z0-9_.-]+$/.test(githubOwnerName) || !/^[A-Za-z0-9_.-]+$/.test(githubRepoName) || !/^(?:[A-Za-z0-9_.-]+|[0-9]+)$/.test(githubWorkflowID)) {
+  throw new Error("Invalid GitHub owner, repository, or workflow identifier.");
+}
+if (!/^srv-[a-z0-9]+$/.test(sourceServiceId) ||
     !/^srv-[a-z0-9]+$/.test(targetServiceId) ||
     sourceServiceId === targetServiceId) {
   throw new Error("RENDER_SOURCE_SERVICE_ID and RENDER_TARGET_SERVICE_ID must be valid, distinct Render service IDs.");
