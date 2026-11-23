@@ -95,7 +95,7 @@ async function handleWebhook(payload: WebhookPayload): Promise<string> {
     }
 
     const sourceService = await fetchServiceInfo(sourceServiceId);
-    const sourceRepo = new URL(sourceService.repo).pathname.replace(/\\.git$/i, "").replace(/^\\/+|\\/+$/g, "");
+    const sourceRepo = new URL(sourceService.repo).pathname.replace(/\.git$/i, "").replace(/^\/+|\/+$/g, "");
     const expectedRepo = `${githubOwnerName}/${githubRepoName}`;
     if (sourceRepo.toLowerCase() !== expectedRepo.toLowerCase()) {
       processedEvents.add(eventId);
