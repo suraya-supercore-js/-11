@@ -40,7 +40,7 @@ test("Render blueprint requires source and target service IDs as manual secrets/
 });
 
 test("workflow ID is explicit and VPS deployment is isolated", () => {
-  assert.match(app, /GITHUB_WORKFLOW_ID = process\.env\.GITHUB_WORKFLOW_ID \|\| ""/);
+  assert.ok(app.includes('const githubWorkflowID = process.env.GITHUB_WORKFLOW_ID || "";'));
   assert.match(compose, /127\.0\.0\.1/);
   assert.match(compose, /RENDER_SOURCE_SERVICE_ID:\s*\$\{RENDER_SOURCE_SERVICE_ID/);
   assert.match(compose, /RENDER_TARGET_SERVICE_ID:\s*\$\{RENDER_TARGET_SERVICE_ID/);
