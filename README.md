@@ -1,6 +1,6 @@
 # Example to Trigger GitHub Actions from a Render Webhook
 
-This example triggers a GitHub Action workflow that creates a deploy when a deploy ended webhook is received for a specific service.
+This example listens for a signed successful deploy event from one explicitly configured source Render service and dispatches a GitHub Actions workflow to deploy a different, explicitly configured target service. The source and target IDs must differ to prevent a self-triggering deploy loop.
 While this specific example GitHub Action triggers another deploy, you may also want to:
 - Run end-to-end tests
 - Clear a CDN cache to serve the latest content
@@ -26,8 +26,8 @@ Creating webhooks on Render requires a Professional plan or higher. You can [vie
     - `GITHUB_API_TOKEN` to the token created in step 4
     - `GITHUB_OWNER_NAME` to the owner of the GitHub repo the workflow is in (ex. `render-examples`)
     - `GITHUB_REPO_NAME` to the GitHub repo the workflow is in (ex. `webhook-github-action`)
-    - `GITHUB_WORKFLOW_ID` to the ID or filename of the workflow to trigger (ex. `example.yaml`)
-8. Trigger a service deploy and watch the GitHub workflow get triggered.
+    - `GITHUB_WORKFLOW_ID` to the ID or filename of the workflow to trigger (ex. `example.yaml`)\n    - `RENDER_SOURCE_SERVICE_ID` to the watched source service ID\n    - `RENDER_TARGET_SERVICE_ID` to a different target service ID\n    - `GITHUB_WORKFLOW_REF` to the branch that contains the workflow (defaults to `main`)
+8. Set `RENDER_SOURCE_SERVICE_ID` to the service whose successful deploy should be observed, and `RENDER_TARGET_SERVICE_ID` to a different service that the workflow is allowed to deploy. The two IDs must differ. Set `GITHUB_WORKFLOW_REF` to the branch containing the dispatch workflow.\n9. Trigger a deploy of the source service and watch the GitHub workflow get triggered. The target service is deployed; the source service is never redeployed by this webhook.
 
 ## Developing
 
