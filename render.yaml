@@ -14,6 +14,12 @@ services:
     sync: false
   - key: RENDER_API_KEY
     sync: false
+  - key: RENDER_SOURCE_SERVICE_ID
+    sync: false
+  - key: RENDER_TARGET_SERVICE_ID
+    sync: false
+  - key: GITHUB_WORKFLOW_REF
+    value: main
   - key: GITHUB_API_TOKEN
     sync: false
   region: oregon

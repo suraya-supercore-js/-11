@@ -1,24 +1,38 @@
----
-name: example
+name: deploy-target-service
 
 on:
-  # Allows you to trigger this workflow via the GitHub API
   workflow_dispatch:
     inputs:
       serviceID:
         type: string
-        description: 'Render Service ID to deploy (e.g. srv-xxx)'
+        required: true
+        description: Explicit target Render service ID
+
+permissions:
+  contents: read
+
+concurrency:
+  group: render-target-deploy-${{ inputs.serviceID }}
+  cancel-in-progress: false
 
 jobs:
   deploy-service:
     runs-on: ubuntu-latest
     steps:
+      - name: Validate target service identifier
+        env:
+          SERVICE_ID: ${{ inputs.serviceID }}
+        run: |
+          if [[ ! "$SERVICE_ID" =~ ^srv-[a-z0-9]+$ ]]; then
+            echo "Invalid Render service ID" >&2
+            exit 1
+          fi
       - name: Install Render CLI
         run: |
           curl -fsSL https://raw.githubusercontent.com/render-oss/cli/refs/heads/main/bin/install.sh | sh
-      - name: Create Deploy
+      - name: Create target deploy
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          SERVICE_ID: ${{ inputs.serviceID }}
           CI: true
-        run: |
-          render deploys create ${{ inputs.serviceID }} --output json --confirm
+        run: render deploys create "$SERVICE_ID" --output json --confirm
