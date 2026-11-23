@@ -38,7 +38,7 @@ const inFlightEvents = new Set<string>();
 const processedEvents = new Set<string>();
 
 app.disable("x-powered-by");
-app.get("/health", (_req: Request, res: Response) => res.status(200).json({ ok: true }));
+app.get("/health", (_req: Request, res: Response) => { res.status(200).json({ ok: true }); });
 
 app.post(
   "/webhook",
@@ -47,13 +47,14 @@ app.post(
     try {
       validateWebhook(req);
       if (!Buffer.isBuffer(req.body)) {
-        return res.status(415).json({ ok: false, error: "Expected application/json webhook body." });
+        res.status(415).json({ ok: false, error: "Expected application/json webhook body." });
+        return;
       }
       const payload = JSON.parse(req.body.toString("utf8")) as WebhookPayload;
       const result = await handleWebhook(payload);
-      return res.status(202).json({ accepted: true, result });
+      res.status(202).json({ accepted: true, result });
     } catch (error) {
-      return next(error);
+      next(error);
     }
   }
 );
@@ -62,7 +63,7 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
   const status = err instanceof WebhookVerificationError ? 400 :
     err instanceof SyntaxError ? 400 : 500;
   console.error("Webhook request failed:", err instanceof Error ? err.message : "unknown error");
-  return res.status(status).json({ ok: false, error: status === 400 ? "Invalid webhook request." : "Webhook processing failed." });
+  res.status(status).json({ ok: false, error: status === 400 ? "Invalid webhook request." : "Webhook processing failed." });
 });
 
 const server = app.listen(port, "0.0.0.0", () => {
